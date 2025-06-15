@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { Transaction, QRData } from '../types';
@@ -11,7 +11,7 @@ import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { toast } from './ui/use-toast';
 import { Badge } from './ui/badge';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Clock } from 'lucide-react';
 
 const QRGenerator: React.FC = () => {
   const [amount, setAmount] = useState<string>('');
@@ -19,7 +19,35 @@ const QRGenerator: React.FC = () => {
   const [description, setDescription] = useState<string>('');
   const [qrData, setQrData] = useState<QRData | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  
+  const [timeLeft, setTimeLeft] = useState<number>(10);
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (qrData && !isExpired) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setIsExpired(true);
+            setQrData(null);
+            toast({
+              title: "QR Code Expired",
+              description: "The QR code has expired. Please generate a new one.",
+              variant: "destructive"
+            });
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [qrData, isExpired]);
+
   const handleGenerate = () => {
     if (!amount || !recipient) {
       toast({
@@ -41,6 +69,8 @@ const QRGenerator: React.FC = () => {
     }
     
     setIsGenerating(true);
+    setIsExpired(false);
+    setTimeLeft(10);
     
     const sender = "wallet_" + Math.random().toString(36).substring(2, 6);
     const publicKey = "pk_demo";
@@ -78,7 +108,7 @@ const QRGenerator: React.FC = () => {
       
       toast({
         title: "QR Code Generated",
-        description: "Transaction has been digitally signed and is ready to share.",
+        description: "Transaction has been digitally signed and is ready to share. Valid for 10 seconds.",
       });
     }, 500);
   };
@@ -88,6 +118,8 @@ const QRGenerator: React.FC = () => {
     setAmount('');
     setRecipient('');
     setDescription('');
+    setIsExpired(false);
+    setTimeLeft(10);
   };
   
   return (
@@ -138,7 +170,7 @@ const QRGenerator: React.FC = () => {
                   />
                 </div>
               </div>
-            </CardContent>
+            
             <CardFooter>
               <Button 
                 onClick={handleGenerate} 
@@ -159,11 +191,15 @@ const QRGenerator: React.FC = () => {
         >
           <Card className="bg-white shadow-lg p-6 w-full">
             <CardContent className="flex flex-col items-center pt-4">
-              <div className="flex items-center justify-center mb-4">
-                <ShieldCheck className="h-5 w-5 text-green-500 mr-2" />
+              <div className="flex items-center justify-center mb-4 space-x-2">
+                <ShieldCheck className="h-5 w-5 text-green-500" />
                 <Badge variant="outline" className="text-xs font-mono">
                   Digitally Signed: {qrData.transaction.signature?.substring(4, 14)}...
                 </Badge>
+                <div className="flex items-center text-xs text-muted-foreground">
+                  <Clock className="h-4 w-4 mr-1" />
+                  {timeLeft}s
+                </div>
               </div>
               
               <div className="p-2 bg-white rounded-lg shadow-sm">
@@ -176,9 +212,9 @@ const QRGenerator: React.FC = () => {
                 />
               </div>
               
-              <div className="mt-6 text-center">
+              <div className="mt-4 text-center">
                 <div className="text-lg font-medium">
-                  {qrData.transaction.amount.toFixed(2)}
+                  ₹{qrData.transaction.amount.toFixed(2)}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   To: {qrData.transaction.recipient}
@@ -198,7 +234,7 @@ const QRGenerator: React.FC = () => {
           </Card>
           
           <div className="text-xs text-muted-foreground text-center max-w-xs">
-            This QR code contains a digitally signed transaction. When scanned, the recipient's credits will automatically update based on the transaction amount.
+            This QR code contains a digitally signed transaction and will expire in {timeLeft} seconds. When scanned, the recipient's credits will automatically update based on the transaction amount.
           </div>
         </motion.div>
       )}
