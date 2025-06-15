@@ -1,228 +1,378 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { QrCode, Shield, Wallet, Users, Calendar } from 'lucide-react';
-import NetworkStatus from '@/components/NetworkStatus';
+"use client"
+import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
+import { SignedIn, SignedOut } from "@clerk/clerk-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import Header from "@/components/layout/Header"
+import {
+  QrCode,
+  Scan,
+  Shield,
+  Zap,
+  Users,
+  ArrowRight,
+  CheckCircle,
+  Sparkles,
+  Globe,
+  Lock,
+  Smartphone,
+} from "lucide-react"
 
 const Index = () => {
-  const navigate = useNavigate();
-  
   const features = [
     {
-      icon: <QrCode className="h-8 w-8 text-primary" />,
-      title: 'Secure QR Transactions',
-      description: 'Generate and scan QR codes with cryptographically signed transaction data for secure offline transfers.',
-      action: () => navigate('/generate')
+      icon: QrCode,
+      title: "Generate QR Codes",
+      description: "Create secure, digitally signed payment QR codes instantly",
+      color: "from-blue-500 to-cyan-500",
     },
     {
-      icon: <Shield className="h-8 w-8 text-primary" />,
-      title: 'Offline-First Security',
-      description: 'Transactions are locally encrypted and securely stored, ready to be synced when you\'re back online.',
-      action: () => navigate('/scan')
+      icon: Scan,
+      title: "Scan & Pay",
+      description: "Scan QR codes to process payments with military-grade security",
+      color: "from-purple-500 to-pink-500",
     },
     {
-      icon: <Wallet className="h-8 w-8 text-primary" />,
-      title: 'Blockchain Verification',
-      description: 'When online, all pending transactions are verified and synchronized with the blockchain.',
-      action: () => navigate('/transactions')
+      icon: Shield,
+      title: "Blockchain Security",
+      description: "Every transaction is cryptographically signed and verified",
+      color: "from-green-500 to-emerald-500",
     },
     {
-      icon: <Users className="h-8 w-8 text-primary" />,
-      title: 'Bill Split',
-      description: 'Easily split bills with friends and track shared expenses with automatic calculations and reminders.',
-      action: () => navigate('/split-bill')
+      icon: Zap,
+      title: "Instant Processing",
+      description: "Lightning-fast transaction processing with real-time updates",
+      color: "from-orange-500 to-red-500",
     },
-    {
-      icon: <Calendar className="h-8 w-8 text-primary" />,
-      title: 'Activity Streak',
-      description: 'Track your daily transaction activity and maintain your streak with our LeetCode-style calendar.',
-      action: () => navigate('/activity')
-    }
-  ];
-  
+  ]
+
+  const benefits = [
+    "End-to-end encryption for all transactions",
+    "Offline-first architecture with sync capabilities",
+    "Real-time credit balance tracking",
+    "Comprehensive transaction history",
+    "Multi-device synchronization",
+    "Advanced fraud protection",
+  ]
+
   return (
-    <div className="min-h-screen pt-16 pb-16 bg-background">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Hero Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center py-16 md:py-24"
-        >
-          <div className="mx-auto mb-4 relative">
-            <div className="absolute -left-4 -top-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
-            <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse" />
+        </div>
+
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="text-center mb-16">
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="relative bg-gradient-to-br from-primary/80 to-primary rounded-2xl w-20 h-20 mx-auto flex items-center justify-center mb-8"
-            >
-              <QrCode className="h-10 w-10 text-white" />
-            </motion.div>
-          </div>
-          
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 text-white drop-shadow-lg"
-          >
-            Off-pay
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
-          >
-            Secure offline transactions with blockchain verification, ensuring your 
-            transactions are safe and tamper-proof even without an internet connection.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="flex flex-col sm:flex-row justify-center gap-4 mb-8"
-          >
-            <Button 
-              size="lg" 
-              onClick={() => navigate('/generate')} 
-              className="px-8"
-            >
-              Generate QR Code
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={() => navigate('/scan')}
-              className="px-8"
-            >
-              Scan QR Code
-            </Button>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex justify-center"
-          >
-            <NetworkStatus />
-          </motion.div>
-        </motion.div>
-        
-        {/* Features Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
+              transition={{ duration: 0.6 }}
+              className="mb-6"
             >
-              <Card className="bg-card/80 backdrop-blur-xs border-border/60 h-full">
-                <CardContent className="p-6 flex flex-col items-center text-center">
-                  <div className="mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground mb-4">{feature.description}</p>
-                  <Button onClick={feature.action} className="mt-auto">Learn More</Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
-        
-        {/* Activity Streak Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="mt-16 p-8 bg-card/80 backdrop-blur-xs border border-border/60 rounded-xl"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-center">Your Activity Streak</h2>
-          <div className="grid grid-cols-7 gap-2 max-w-2xl mx-auto">
-            {Array.from({ length: 35 }, (_, i) => {
-              const isActive = Math.random() > 0.3; // Randomly show some active days
-              return (
-                <div
-                  key={i}
-                  className={`aspect-square rounded-md flex items-center justify-center text-sm font-medium
-                    ${isActive ? 'bg-green-500/20 text-green-500 border border-green-500/30' : 'bg-card/50 text-muted-foreground'}`}
-                >
-                  {i + 1}
-                </div>
-              );
-            })}
-          </div>
-          <div className="text-center mt-6">
-            <p className="text-muted-foreground">Current Streak: 7 days</p>
-            <Button variant="outline" className="mt-4" onClick={() => navigate('/activity')}>
-              View Full Calendar
-            </Button>
-          </div>
-        </motion.div>
-        
-        {/* How it works section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="py-16 text-center"
-        >
-          <h2 className="text-3xl font-bold mb-16">How It Works</h2>
-          
-          <div className="relative">
-            <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-border hidden md:block" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {[
-                {
-                  number: '01',
-                  title: 'Generate and Share',
-                  description: 'Create a secure transaction and share via QR code'
-                },
-                {
-                  number: '02',
-                  title: 'Secure Storage',
-                  description: 'Your transaction is encrypted and stored locally'
-                },
-                {
-                  number: '03',
-                  title: 'Blockchain Sync',
-                  description: 'When online, transactions are verified on the blockchain'
-                }
-              ].map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.1 + index * 0.2, duration: 0.5 }}
-                  className="flex flex-col items-center relative"
-                >
-                  <div className="w-16 h-16 rounded-full bg-background border border-border flex items-center justify-center text-xl font-bold mb-6 relative z-10">
-                    {step.number}
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
-};
+              <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 px-4 py-2 text-sm font-medium">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Next-Gen Payment Platform
+              </Badge>
 
-export default Index;
+              <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                  Secure Payments
+                </span>
+                <br />
+                <span className="text-foreground">Made Simple</span>
+              </h1>
+
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Experience the future of digital payments with blockchain-powered security, instant QR code generation,
+                and seamless transaction processing.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+            >
+              <SignedOut>
+                <Link to="/sign-up">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 group"
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link to="/sign-in">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="px-8 py-4 text-lg font-semibold border-2 hover:bg-accent/50"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              </SignedOut>
+
+              <SignedIn>
+                <Link to="/generate">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 group"
+                  >
+                    Generate QR Code
+                    <QrCode className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                  </Button>
+                </Link>
+                <Link to="/scan">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="px-8 py-4 text-lg font-semibold border-2 hover:bg-accent/50"
+                  >
+                    <Scan className="mr-2 h-5 w-5" />
+                    Scan Payment
+                  </Button>
+                </Link>
+              </SignedIn>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+            >
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">256-bit</div>
+                <div className="text-muted-foreground">Encryption Security</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">{"<"}1s</div>
+                <div className="text-muted-foreground">Transaction Speed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">99.9%</div>
+                <div className="text-muted-foreground">Uptime Guarantee</div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Powerful Features for
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {" "}
+                Modern Payments
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Built with cutting-edge technology to provide the most secure and efficient payment experience
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="group"
+              >
+                <Card className="h-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2">
+                  <CardContent className="p-8 text-center">
+                    <div
+                      className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${feature.color} p-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <feature.icon className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-8">
+                Why Choose
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {" "}
+                  OFF_PAY?
+                </span>
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                We've built the most secure and user-friendly payment platform with enterprise-grade features that work
+                seamlessly across all devices.
+              </p>
+
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <motion.div
+                    key={benefit}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center space-x-3"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-lg">{benefit}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="relative z-10">
+                <Card className="bg-gradient-to-br from-blue-600 to-purple-600 text-white border-0 shadow-2xl">
+                  <CardContent className="p-8">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="text-center">
+                        <Lock className="w-12 h-12 mx-auto mb-4 opacity-80" />
+                        <div className="text-2xl font-bold mb-2">Secure</div>
+                        <div className="text-blue-100">Bank-level encryption</div>
+                      </div>
+                      <div className="text-center">
+                        <Globe className="w-12 h-12 mx-auto mb-4 opacity-80" />
+                        <div className="text-2xl font-bold mb-2">Global</div>
+                        <div className="text-blue-100">Worldwide access</div>
+                      </div>
+                      <div className="text-center">
+                        <Smartphone className="w-12 h-12 mx-auto mb-4 opacity-80" />
+                        <div className="text-2xl font-bold mb-2">Mobile</div>
+                        <div className="text-blue-100">Cross-platform</div>
+                      </div>
+                      <div className="text-center">
+                        <Users className="w-12 h-12 mx-auto mb-4 opacity-80" />
+                        <div className="text-2xl font-bold mb-2">Social</div>
+                        <div className="text-blue-100">Split bills easily</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Background decoration */}
+              <div className="absolute -top-4 -right-4 w-full h-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-lg -z-10" />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white">
+        <div className="container mx-auto max-w-4xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Payments?</h2>
+            <p className="text-xl mb-8 opacity-90 leading-relaxed">
+              Join thousands of users who trust OFF_PAY for their secure payment needs
+            </p>
+
+            <SignedOut>
+              <Link to="/sign-up">
+                <Button
+                  size="lg"
+                  className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                >
+                  Start Your Journey
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </SignedOut>
+
+            <SignedIn>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/generate">
+                  <Button
+                    size="lg"
+                    className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+                  >
+                    <QrCode className="mr-2 h-5 w-5" />
+                    Generate QR Code
+                  </Button>
+                </Link>
+                <Link to="/scan">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold"
+                  >
+                    <Scan className="mr-2 h-5 w-5" />
+                    Scan Payment
+                  </Button>
+                </Link>
+              </div>
+            </SignedIn>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-4 bg-gray-900 text-white">
+        <div className="container mx-auto max-w-6xl text-center">
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold">OP</span>
+            </div>
+            <span className="text-xl font-bold">OFF_PAY</span>
+          </div>
+          <p className="text-gray-400 mb-4">Secure, fast, and reliable payment solutions for the modern world.</p>
+          <p className="text-gray-500 text-sm">
+            © 2024 OFF_PAY. All rights reserved. Built with security and privacy in mind.
+          </p>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+export default Index
