@@ -1,248 +1,238 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
-import { AnimatePresence, motion } from "framer-motion"
-import { cn } from "@/lib/utils"
-import { MenuIcon, X, User, Sparkles } from "lucide-react"
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/clerk-react"
+import { useState, useRef, useEffect } from "react"
+import { Menu, X, Bell, User, Settings, LogOut, CreditCard, Activity, HelpCircle, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import NetworkStatus from "../NetworkStatus"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const Header: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const location = useLocation()
-  const { user } = useUser()
+interface HeaderProps {
+  isAuthenticated: boolean
+  onAuthClick: () => void
+  credits: number
+}
 
+export default function Header({ isAuthenticated, onAuthClick, credits }: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false)
+      }
     }
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [location.pathname])
-
-  const navItems = [
-    { label: "Home", path: "/" },
-    { label: "Generate", path: "/generate" },
-    { label: "Scan", path: "/scan" },
-    { label: "Transactions", path: "/transactions" },
-  ]
-
-  const getPageTitle = () => {
-    switch (location.pathname) {
-      case "/":
-        return "OFF PAY"
-      case "/generate":
-        return "Generate QR"
-      case "/scan":
-        return "Scan & Pay"
-      case "/transactions":
-        return "Transactions"
-      case "/profile":
-        return "Profile"
-      case "/activity":
-        return "Activity"
-      case "/split-bill":
-        return "Split Bill"
-      default:
-        return "OFF PAY"
-    }
+  const handleLogout = () => {
+    setIsProfileDropdownOpen(false)
+    onAuthClick()
   }
 
-  if (location.pathname === "/auth") return null
+  const menuItems = [
+    { icon: User, label: "Profile", action: () => console.log("Profile") },
+    { icon: CreditCard, label: "Payment Methods", action: () => console.log("Payment Methods") },
+    { icon: Activity, label: "Transaction History", action: () => console.log("Transaction History") },
+    { icon: Settings, label: "Settings", action: () => console.log("Settings") },
+    { icon: Shield, label: "Security", action: () => console.log("Security") },
+    { icon: HelpCircle, label: "Help & Support", action: () => console.log("Help") },
+  ]
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-        isScrolled
-          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-lg border-b border-border/50 py-3"
-          : "bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-4 sticky top-0 z-40",
-      )}
-    >
-      <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-3 group">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="relative"
-          >
-            <div className="h-10 w-10 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-              <span className="text-white font-bold text-lg">OP</span>
-              <div className="absolute -top-1 -right-1">
-                <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" />
-              </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center space-x-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+              <span className="text-sm font-bold text-white">OP</span>
             </div>
-          </motion.div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               OFF_PAY
             </span>
-            <span className="text-xs text-muted-foreground font-medium -mt-1">Secure Payments</span>
           </div>
-        </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-accent/50",
-                location.pathname === item.path
-                  ? "bg-primary/10 text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Home
+            </a>
+            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Features
+            </a>
+            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
+              About
+            </a>
+            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Contact
+            </a>
+          </nav>
 
-          <div className="w-px h-6 bg-border mx-4" />
+          {/* Right Side */}
+          <div className="flex items-center space-x-3">
+            {isAuthenticated ? (
+              <>
+                {/* Credits Display */}
+                <div className="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-green-50 to-blue-50 px-3 py-1.5 rounded-full border border-green-200">
+                  <CreditCard className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-semibold text-green-700">₹{credits}</span>
+                </div>
 
-          <SignedIn>
-            <div className="flex items-center space-x-3">
-              <Link
-                to="/profile"
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center hover:bg-accent/50",
-                  location.pathname === "/profile"
-                    ? "bg-primary/10 text-primary shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </Link>
-              <div className="scale-110">
-                <UserButton
-                  afterSignOutUrl="/"
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-9 h-9 ring-2 ring-primary/20 hover:ring-primary/40 transition-all",
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          </SignedIn>
+                {/* Notifications */}
+                <Button variant="ghost" size="sm" className="relative p-2">
+                  <Bell className="h-5 w-5" />
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-red-500 text-xs">
+                    3
+                  </Badge>
+                </Button>
 
-          <SignedOut>
-            <div className="flex items-center space-x-3">
-              <Link to="/sign-in">
-                <Button variant="ghost" size="sm" className="hover:bg-accent/50">
+                {/* Profile Dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1"
+                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Profile" />
+                      <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm">
+                        JD
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+
+                  {/* Dropdown Menu */}
+                  {isProfileDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Profile" />
+                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                              JD
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-semibold text-gray-900">John Doe</p>
+                            <p className="text-sm text-gray-500">john.doe@example.com</p>
+                          </div>
+                        </div>
+                        {/* Credits in mobile dropdown */}
+                        <div className="sm:hidden mt-3 flex items-center justify-between bg-gradient-to-r from-green-50 to-blue-50 px-3 py-2 rounded-lg border border-green-200">
+                          <div className="flex items-center space-x-2">
+                            <CreditCard className="h-4 w-4 text-green-600" />
+                            <span className="text-sm font-medium text-gray-700">Balance</span>
+                          </div>
+                          <span className="text-sm font-bold text-green-700">₹{credits}</span>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        {menuItems.map((item, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              item.action()
+                              setIsProfileDropdownOpen(false)
+                            }}
+                            className="w-full flex items-center space-x-3 px-4 py-2.5 text-left hover:bg-gray-50 transition-colors"
+                          >
+                            <item.icon className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-700">{item.label}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Logout */}
+                      <div className="border-t border-gray-100 pt-2">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 text-left hover:bg-red-50 transition-colors text-red-600"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span className="text-sm font-medium">Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Menu Button */}
+                <Button variant="ghost" size="sm" className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                  {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={onAuthClick} className="hidden sm:inline-flex">
                   Sign In
                 </Button>
-              </Link>
-              <Link to="/sign-up">
                 <Button
-                  size="sm"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={onAuthClick}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
                   Get Started
                 </Button>
-              </Link>
-            </div>
-          </SignedOut>
-
-          <NetworkStatus />
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center space-x-4">
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
-
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-lg hover:bg-accent/50 transition-colors focus:outline-none"
-            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-5 w-5 text-foreground" />
-            ) : (
-              <MenuIcon className="h-5 w-5 text-foreground" />
+                <Button variant="ghost" size="sm" className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </>
             )}
-          </button>
+          </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border/50"
-          >
-            <div className="container mx-auto px-4 py-6 space-y-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "block px-4 py-3 rounded-lg text-base font-medium transition-all duration-200",
-                    location.pathname === item.path
-                      ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-
-              <SignedIn>
-                <Link
-                  to="/profile"
-                  className={cn(
-                    "flex items-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200",
-                    location.pathname === "/profile"
-                      ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                  )}
-                >
-                  <User className="h-4 w-4 mr-3" />
-                  Profile
-                </Link>
-              </SignedIn>
-
-              <SignedOut>
-                <div className="pt-4 space-y-3 border-t border-border/50">
-                  <Link to="/sign-in" className="block">
-                    <Button variant="ghost" className="w-full justify-start text-base py-3">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/sign-up" className="block">
-                    <Button className="w-full justify-start text-base py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                      Get Started
-                    </Button>
-                  </Link>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm">
+            <nav className="py-4 space-y-2">
+              <a
+                href="#"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                Home
+              </a>
+              <a
+                href="#"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                Features
+              </a>
+              <a
+                href="#"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                About
+              </a>
+              <a
+                href="#"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                Contact
+              </a>
+              {!isAuthenticated && (
+                <div className="px-4 pt-2 border-t border-gray-200">
+                  <Button
+                    onClick={onAuthClick}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    Sign In
+                  </Button>
                 </div>
-              </SignedOut>
-
-              <div className="pt-4 border-t border-border/50">
-                <NetworkStatus />
-              </div>
-            </div>
-          </motion.div>
+              )}
+            </nav>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </header>
   )
 }
-
-export default Header
