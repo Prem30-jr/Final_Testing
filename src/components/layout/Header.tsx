@@ -36,13 +36,36 @@ const Header: React.FC = () => {
     { label: "Transactions", path: "/transactions" },
   ]
 
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case "/":
+        return "OFF PAY"
+      case "/generate":
+        return "Generate QR"
+      case "/scan":
+        return "Scan & Pay"
+      case "/transactions":
+        return "Transactions"
+      case "/profile":
+        return "Profile"
+      case "/activity":
+        return "Activity"
+      case "/split-bill":
+        return "Split Bill"
+      default:
+        return "OFF PAY"
+    }
+  }
+
+  if (location.pathname === "/auth") return null
+
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         isScrolled
           ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-lg border-b border-border/50 py-3"
-          : "bg-transparent py-6",
+          : "bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-4 sticky top-0 z-40",
       )}
     >
       <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between">
