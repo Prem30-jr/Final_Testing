@@ -170,7 +170,7 @@ const QRGenerator: React.FC = () => {
                   />
                 </div>
               </div>
-            
+            </CardContent>
             <CardFooter>
               <Button 
                 onClick={handleGenerate} 
